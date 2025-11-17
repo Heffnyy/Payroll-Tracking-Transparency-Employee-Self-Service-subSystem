@@ -1,0 +1,722 @@
+{
+  "info": {
+    "name": "Payroll System - Phase 1 Employee Self-Service",
+    "description": "Complete API collection for testing Phase 1 - Employee Self-Service features including authentication, payslips, disputes, and reimbursement claims.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "payslip_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "dispute_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "claim_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register New Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.test('Employee registered successfully', function() {",
+                  "        pm.expect(pm.response.json().success).to.be.true;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"EMP004\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Williams\",\n  \"email\": \"sarah.williams@company.com\",\n  \"password\": \"password123\",\n  \"department\": \"HR\",\n  \"position\": \"HR Manager\",\n  \"hireDate\": \"2023-01-15\",\n  \"phoneNumber\": \"+1234567893\",\n  \"address\": \"321 Elm St, City, Country\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login (John Doe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "    pm.test('Login successful', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "        pm.expect(response.data.token).to.exist;",
+                  "    });",
+                  "    console.log('Token saved:', response.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@company.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Jane Smith)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane.smith@company.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Mike Johnson)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mike.johnson@company.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Employee Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile retrieved successfully', function() {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('email');",
+                  "    pm.expect(response.data).to.not.have.property('password');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/employees/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"+1234567899\",\n  \"address\": \"456 Updated Address, New City, Country\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/employees/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Payslips",
+      "item": [
+        {
+          "name": "Get All My Payslips (Paginated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('Payslips retrieved', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "        pm.expect(response.data.payslips).to.be.an('array');",
+                  "        pm.expect(response.data.pagination).to.exist;",
+                  "    });",
+                  "    if (response.data.payslips.length > 0) {",
+                  "        pm.collectionVariables.set('payslip_id', response.data.payslips[0]._id);",
+                  "        console.log('Payslip ID saved:', response.data.payslips[0]._id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/payslips?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payslips"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Payslips by Year (2024)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/payslips/year/2024",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payslips", "year", "2024"]
+            }
+          }
+        },
+        {
+          "name": "Get Payslips by Year (2025)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/payslips/year/2025",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payslips", "year", "2025"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Payslip Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/payslips/{{payslip_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payslips", "{{payslip_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Download Payslip Document",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/payslips/{{payslip_id}}/download",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payslips", "{{payslip_id}}", "download"]
+            }
+          }
+        },
+        {
+          "name": "Download Tax Document",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/payslips/{{payslip_id}}/tax-document",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payslips", "{{payslip_id}}", "tax-document"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Disputes",
+      "item": [
+        {
+          "name": "Submit New Dispute",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('Dispute submitted', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "    });",
+                  "    if (response.data && response.data._id) {",
+                  "        pm.collectionVariables.set('dispute_id', response.data._id);",
+                  "        console.log('Dispute ID saved:', response.data._id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payslipId\": \"{{payslip_id}}\",\n  \"subject\": \"Incorrect deduction calculation\",\n  \"description\": \"The health insurance deduction seems higher than usual. Please review my November payslip.\",\n  \"category\": \"calculation_error\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/disputes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "disputes"]
+            }
+          }
+        },
+        {
+          "name": "Get All My Disputes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('Disputes retrieved', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "        pm.expect(response.data).to.be.an('array');",
+                  "    });",
+                  "    if (response.data.length > 0 && !pm.collectionVariables.get('dispute_id')) {",
+                  "        pm.collectionVariables.set('dispute_id', response.data[0]._id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/disputes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "disputes"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Dispute Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/disputes/{{dispute_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "disputes", "{{dispute_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Track Dispute Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/disputes/{{dispute_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "disputes", "{{dispute_id}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Reimbursement Claims",
+      "item": [
+        {
+          "name": "Submit Travel Claim",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('Claim submitted', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "    });",
+                  "    if (response.data && response.data._id) {",
+                  "        pm.collectionVariables.set('claim_id', response.data._id);",
+                  "        console.log('Claim ID saved:', response.data._id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimType\": \"travel\",\n  \"description\": \"Uber rides for client meetings in downtown area\",\n  \"amount\": 85.50,\n  \"expenseDate\": \"2024-11-10\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reimbursements",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "Submit Meal Claim",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimType\": \"meal\",\n  \"description\": \"Business lunch with potential client\",\n  \"amount\": 125.00,\n  \"expenseDate\": \"2024-11-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reimbursements",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "Submit Office Supplies Claim",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimType\": \"office_supplies\",\n  \"description\": \"Wireless mouse and keyboard for home office\",\n  \"amount\": 95.00,\n  \"expenseDate\": \"2024-11-12\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reimbursements",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "Get All My Claims",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('Claims retrieved', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "        pm.expect(response.data).to.be.an('array');",
+                  "    });",
+                  "    if (response.data.length > 0 && !pm.collectionVariables.get('claim_id')) {",
+                  "        pm.collectionVariables.set('claim_id', response.data[0]._id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reimbursements",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Claim Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reimbursements/{{claim_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reimbursements", "{{claim_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Track Claim Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reimbursements/{{claim_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reimbursements", "{{claim_id}}", "status"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
