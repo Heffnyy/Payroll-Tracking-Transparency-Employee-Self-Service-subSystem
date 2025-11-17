@@ -16,22 +16,26 @@ import {
   ReimbursementClaim,
   ReimbursementClaimSchema,
 } from './schemas/reimbursement-claim.schema';
+import { Report, ReportSchema } from './schemas/report.schema';
 
 // Services
 import { EmployeeService } from './services/employee.service';
 import { PayslipService } from './services/payslip.service';
 import { DisputeService } from './services/dispute.service';
 import { ReimbursementService } from './services/reimbursement.service';
+import { ReportService } from './services/report.service';
 
 // Controllers
 import { EmployeeController } from './controllers/employee.controller';
 import { PayslipController } from './controllers/payslip.controller';
 import { DisputeController } from './controllers/dispute.controller';
 import { ReimbursementController } from './controllers/reimbursement.controller';
+import { ReportController } from './controllers/report.controller';
 
 // Guards & Strategy
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtStrategy } from './guards/jwt.strategy';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
@@ -44,6 +48,7 @@ import { JwtStrategy } from './guards/jwt.strategy';
       { name: Payslip.name, schema: PayslipSchema },
       { name: Dispute.name, schema: DisputeSchema },
       { name: ReimbursementClaim.name, schema: ReimbursementClaimSchema },
+      { name: Report.name, schema: ReportSchema },
     ]),
     PassportModule,
     JwtModule.register({
@@ -57,6 +62,7 @@ import { JwtStrategy } from './guards/jwt.strategy';
     PayslipController,
     DisputeController,
     ReimbursementController,
+    ReportController,
   ],
   providers: [
     AppService,
@@ -64,8 +70,10 @@ import { JwtStrategy } from './guards/jwt.strategy';
     PayslipService,
     DisputeService,
     ReimbursementService,
+    ReportService,
     JwtAuthGuard,
     JwtStrategy,
+    RolesGuard,
   ],
 })
 export class AppModule {}

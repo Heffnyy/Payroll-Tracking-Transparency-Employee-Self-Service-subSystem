@@ -24,6 +24,7 @@ const employeeSchema = new mongoose.Schema({
   password: String,
   department: String,
   position: String,
+  role: { type: String, enum: ['EMPLOYEE', 'MANAGER', 'PAYROLL_SPECIALIST', 'FINANCE_STAFF', 'ADMIN'], default: 'EMPLOYEE' },
   hireDate: Date,
   isActive: { type: Boolean, default: true },
   phoneNumber: String,
@@ -126,6 +127,7 @@ async function seedDatabase() {
         password: hashedPassword,
         department: 'Engineering',
         position: 'Senior Software Engineer',
+        role: 'EMPLOYEE',
         hireDate: new Date('2020-01-15'),
         phoneNumber: '+1234567890',
         address: '123 Main St, City, Country',
@@ -138,6 +140,7 @@ async function seedDatabase() {
         password: hashedPassword,
         department: 'Marketing',
         position: 'Marketing Manager',
+        role: 'MANAGER',
         hireDate: new Date('2021-03-20'),
         phoneNumber: '+1234567891',
         address: '456 Oak Ave, City, Country',
@@ -150,9 +153,49 @@ async function seedDatabase() {
         password: hashedPassword,
         department: 'Finance',
         position: 'Financial Analyst',
+        role: 'EMPLOYEE',
         hireDate: new Date('2022-06-10'),
         phoneNumber: '+1234567892',
         address: '789 Pine Rd, City, Country',
+      },
+      {
+        employeeId: 'EMP004',
+        firstName: 'Sarah',
+        lastName: 'Williams',
+        email: 'sarah.williams@company.com',
+        password: hashedPassword,
+        department: 'Human Resources',
+        position: 'Payroll Specialist',
+        role: 'PAYROLL_SPECIALIST',
+        hireDate: new Date('2019-08-12'),
+        phoneNumber: '+1234567893',
+        address: '321 Elm St, City, Country',
+      },
+      {
+        employeeId: 'EMP005',
+        firstName: 'David',
+        lastName: 'Brown',
+        email: 'david.brown@company.com',
+        password: hashedPassword,
+        department: 'Finance',
+        position: 'Finance Manager',
+        role: 'FINANCE_STAFF',
+        hireDate: new Date('2018-05-03'),
+        phoneNumber: '+1234567894',
+        address: '654 Maple Dr, City, Country',
+      },
+      {
+        employeeId: 'EMP006',
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@company.com',
+        password: hashedPassword,
+        department: 'Administration',
+        position: 'System Administrator',
+        role: 'ADMIN',
+        hireDate: new Date('2017-01-01'),
+        phoneNumber: '+1234567895',
+        address: '987 Cedar Ln, City, Country',
       },
     ]);
     console.log(`✅ Created ${employees.length} employees`);
@@ -279,8 +322,26 @@ async function seedDatabase() {
     console.log(`   - Disputes: ${disputes.length}`);
     console.log(`   - Reimbursement Claims: ${claims.length}`);
     console.log('\n👤 Test Login Credentials:');
-    console.log('   Email: john.doe@company.com');
-    console.log('   Password: password123\n');
+    console.log('   Regular Employee:');
+    console.log('     Email: john.doe@company.com');
+    console.log('     Password: password123');
+    console.log('     Role: EMPLOYEE');
+    console.log('\n   Manager:');
+    console.log('     Email: jane.smith@company.com');
+    console.log('     Password: password123');
+    console.log('     Role: MANAGER');
+    console.log('\n   Payroll Specialist:');
+    console.log('     Email: sarah.williams@company.com');
+    console.log('     Password: password123');
+    console.log('     Role: PAYROLL_SPECIALIST');
+    console.log('\n   Finance Staff:');
+    console.log('     Email: david.brown@company.com');
+    console.log('     Password: password123');
+    console.log('     Role: FINANCE_STAFF');
+    console.log('\n   Admin:');
+    console.log('     Email: admin@company.com');
+    console.log('     Password: password123');
+    console.log('     Role: ADMIN\n');
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);

@@ -3,6 +3,14 @@ import { Document } from 'mongoose';
 
 export type EmployeeDocument = Employee & Document;
 
+export enum EmployeeRole {
+  EMPLOYEE = 'employee',
+  PAYROLL_SPECIALIST = 'payroll_specialist',
+  FINANCE_STAFF = 'finance_staff',
+  MANAGER = 'manager',
+  ADMIN = 'admin',
+}
+
 @Schema({ timestamps: true })
 export class Employee {
   @Prop({ required: true, unique: true })
@@ -19,6 +27,9 @@ export class Employee {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop({ type: String, enum: EmployeeRole, default: EmployeeRole.EMPLOYEE })
+  role: EmployeeRole;
 
   @Prop({ required: true })
   department: string;

@@ -56,6 +56,7 @@ export class EmployeeService {
       sub: employee._id,
       email: employee.email,
       employeeId: employee.employeeId,
+      role: employee.role,
     };
     const token = this.jwtService.sign(payload);
 
