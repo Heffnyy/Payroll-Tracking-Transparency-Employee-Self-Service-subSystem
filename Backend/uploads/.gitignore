@@ -1,0 +1,12 @@
+# Ignore all files in uploads except README
+uploads/*
+!uploads/README.md
+!uploads/payslips/
+!uploads/tax-documents/
+!uploads/receipts/
+uploads/payslips/*
+uploads/tax-documents/*
+uploads/receipts/*
+!uploads/payslips/.gitkeep
+!uploads/tax-documents/.gitkeep
+!uploads/receipts/.gitkeep
